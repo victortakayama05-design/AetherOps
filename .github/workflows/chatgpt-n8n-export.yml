@@ -1,0 +1,40 @@
+name: ChatGPT n8n Catalog Export
+
+on:
+  push:
+    branches:
+      - chatgpt-n8n-export-20261005
+    paths:
+      - '.github/workflows/chatgpt-n8n-export.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout isolated branch
+        uses: actions/checkout@v4
+
+      - name: Export public free n8n templates
+        run: python3 tools/export_n8n_catalog.py
+
+      - name: Upload ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: n8n-workflows-free-2026-10-05
+          path: n8n-workflows-free-2026-10-05.zip
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+      - name: Upload manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: n8n-workflows-manifest-2026-10-05
+          path: n8n-workflows-free-2026-10-05/manifest.json
+          if-no-files-found: error
+          retention-days: 1
